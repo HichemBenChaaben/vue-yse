@@ -8,7 +8,11 @@ interface Breakpoints {
 export default function createBreakpoints(
   breakpoints: Breakpoints = { laptopL: 1440, laptop: 1024, tablet: 768 }
 ) {
-  const screen = ref(isBrowser ? window.innerWidth : 0)
+  const screen = ref<number | null>(null)
+
+  if (!isBrowser) {
+    return (screen.value = null)
+  }
 
   const setScreenSize = (): void => {
     updateBreakpoints()
@@ -17,7 +21,7 @@ export default function createBreakpoints(
 
   const updateBreakpoints = (): void => {
     result.value = sortedBreakpoints.reduce((acc, [name, width]) => {
-      return screen.value >= width ? name : acc
+      return (screen.value as number) >= width ? name : acc
     }, sortedBreakpoints[0][0])
   }
   const sortedBreakpoints = Object.entries(breakpoints).sort((a, b) => (a[1] >= b[1] ? 1 : -1))
